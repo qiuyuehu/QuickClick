@@ -72,8 +72,6 @@ pip install pynput pyinstaller
 pyinstaller --onefile --windowed --name QuickClick main.py
 ```
 
-打包完成后，`dist/QuickClick.exe` 可独立运行，无需 Python 环境。
-
 > **注意**：部分杀毒软件可能对 Python 打包的 EXE 误报，代码完全开源，可自行审计后添加信任。
 
 ## 快捷键
@@ -110,7 +108,7 @@ QuickClick/
 ## 系统要求
 
 - **操作系统**：Windows 10 / 11
-- **Python**：3.7 及以上（直接运行时需要，打包后不需要）
+- **Python**：3.7 及以上（打包后不需要）
 - **依赖**：[pynput](https://pypi.org/project/pynput/)
 
 ## 常见问题
