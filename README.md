@@ -130,7 +130,7 @@ A：当前版本仅支持鼠标点击录制，键盘操作暂不支持。
 
 **qiuyuehu** — [GitHub](https://github.com/qiuyuehu)
 
-**凛** — 开发与设计
+**凛 (Emperor Agent)** — 开发与设计
 
 ## License
 
