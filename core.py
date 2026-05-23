@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 core.py — QuickClick 连点器 + 鼠标宏 核心引擎
+Author: qiuyuehu / 凛
 
 功能：
 1. AutoClicker — 连点（左键/右键，可调速度）

@@ -99,7 +99,7 @@ QuickClick/
 ## 系统要求
 
 - **操作系统**：Windows 10 / 11
-- **Python**：3.7 及以上（直接运行时需要，打包 EXE 后不需要）
+- **Python**：3.7 及以上（直接运行时需要，打包后不需要）
 - **依赖**：[pynput](https://pypi.org/project/pynput/)
 
 ## 常见问题
@@ -125,6 +125,12 @@ A：当前版本仅支持鼠标点击录制，键盘操作暂不支持。
 - 鼠标宏录制与无限循环回放
 - 全局热键控制（F6-F9）
 - 支持打包为独立 EXE
+
+## 作者
+
+**qiuyuehu** — [GitHub](https://github.com/qiuyuehu)
+
+**凛** — 开发与设计
 
 ## License
 

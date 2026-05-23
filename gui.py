@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 gui.py — QuickClick 连点器 GUI + 热键管理
+Author: qiuyuehu / 凛
 
 热键：
   F8 — 开始/停止连点
