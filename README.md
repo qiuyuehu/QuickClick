@@ -3,7 +3,7 @@
 <p align="center"><b>一款 Windows 平台的轻量工具，集「高速鼠标连点器」与「宏录制/回放」于一体，支持全局热键控制，游戏、办公、自动化场景通用。</b></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white" alt="Python 3.11">
+  <img src="https://img.shields.io/badge/Python-3.7+-blue?logo=python&logoColor=white" alt="Python 3.7+">
   <img src="https://img.shields.io/badge/Platform-Windows-0078d4?logo=windows&logoColor=white" alt="Windows">
   <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
   <img src="https://img.shields.io/github/stars/qiuyuehu/QuickClick?style=social" alt="Stars">
@@ -40,15 +40,7 @@
 
 ## 快速开始
 
-### 方式一：双击启动（最简单）
-
-仓库自带 `start.bat` 脚本，双击即可自动安装依赖并启动程序，适合不想手动敲命令的用户：
-
-1. 克隆或下载本仓库
-2. 双击 `start.bat`
-3. 脚本会自动安装 `pynput` 依赖并启动 `main.py`
-
-### 方式二：命令行运行
+### 方式一：命令行运行
 
 ```bash
 # 1. 克隆仓库
@@ -62,7 +54,9 @@ pip install pynput
 python main.py
 ```
 
-### 方式三：打包为 EXE
+> 也可以直接双击仓库中的 `start.bat`，自动完成依赖安装与启动。
+
+### 方式二：打包为 EXE
 
 ```bash
 pip install pyinstaller
@@ -101,13 +95,13 @@ QuickClick/
 ├── gui.py        # GUI 界面 + 热键管理
 ├── start.bat     # Windows 一键启动脚本
 ├── LICENSE       # MIT 开源协议
-└── README.md     # 就是这个文件
+└── README.md     # 项目文档
 ```
 
 ## 系统要求
 
 - **操作系统**：Windows 10 / 11
-- **Python**：3.11（直接运行时需要，打包 EXE 后不需要）
+- **Python**：3.7 及以上（直接运行时需要，打包 EXE 后不需要）
 - **依赖**：[pynput](https://pypi.org/project/pynput/)
 
 ## 常见问题
