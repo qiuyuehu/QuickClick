@@ -61,7 +61,14 @@ python main.py
 ### 方式三：自行打包 EXE
 
 ```bash
-pip install pyinstaller
+# 1. 克隆仓库
+git clone https://github.com/qiuyuehu/QuickClick.git
+cd QuickClick
+
+# 2. 安装依赖
+pip install pynput pyinstaller
+
+# 3. 打包
 pyinstaller --onefile --windowed --name QuickClick main.py
 ```
 
