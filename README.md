@@ -54,8 +54,6 @@ pip install pynput
 python main.py
 ```
 
-> 也可以直接双击仓库中的 `start.bat`，自动完成依赖安装与启动。
-
 ### 方式二：打包为 EXE
 
 ```bash
