@@ -61,11 +61,15 @@ python main.py
 ### 方式三：自行打包 EXE
 
 ```bash
-pip install pyinstaller
-pyinstaller --onefile --windowed --name QuickClick main.py
-```
+# 1. 克隆仓库
+git clone https://github.com/qiuyuehu/QuickClick.git
+cd QuickClick
 
-打包完成后，`dist/QuickClick.exe` 可独立运行，无需 Python 环境。
+# 2. 安装依赖
+pip install pynput pyinstaller
+
+# 3. 打包
+pyinstaller --onefile --windowed --name QuickClick main.py
 
 > **注意**：部分杀毒软件可能对 Python 打包的 EXE 误报，代码完全开源，可自行审计后添加信任。
 
@@ -103,7 +107,7 @@ QuickClick/
 ## 系统要求
 
 - **操作系统**：Windows 10 / 11
-- **Python**：3.7 及以上（直接运行时需要，打包后不需要）
+- **Python**：3.7 及以上（打包后不需要）
 - **依赖**：[pynput](https://pypi.org/project/pynput/)
 
 ## 常见问题
