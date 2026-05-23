@@ -40,7 +40,11 @@
 
 ## 快速开始
 
-### 方式一：命令行运行
+### 方式一：下载 EXE（免装 Python）
+
+前往 [Releases](https://github.com/qiuyuehu/QuickClick/releases) 页面，下载最新版本的 `QuickClick.exe`，双击直接运行。
+
+### 方式二：命令行运行
 
 ```bash
 # 1. 克隆仓库
@@ -54,7 +58,7 @@ pip install pynput
 python main.py
 ```
 
-### 方式二：打包为 EXE
+### 方式三：自行打包 EXE
 
 ```bash
 pip install pyinstaller
