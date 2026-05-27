@@ -36,7 +36,7 @@ class App:
         # ── 主窗口 ──
         self.root = tk.Tk()
         self.root.title("QuickClick")
-        self.root.geometry("320x470")
+        self.root.geometry("320x580")
         self.root.resizable(False, False)
         self.root.attributes('-topmost', True)
 
@@ -66,7 +66,10 @@ class App:
         tk.Label(row1, text="按键:").pack(side='left')
         self.btn_var = tk.StringVar(value="left")
         tk.Radiobutton(row1, text="左键", variable=self.btn_var, value="left").pack(side='left', padx=(8, 4))
+        tk.Radiobutton(row1, text="中键", variable=self.btn_var, value="middle").pack(side='left', padx=4)
         tk.Radiobutton(row1, text="右键", variable=self.btn_var, value="right").pack(side='left', padx=4)
+        self.double_click_var = tk.BooleanVar(value=False)
+        tk.Checkbutton(row1, text="双击", variable=self.double_click_var).pack(side='left', padx=8)
 
         # 速度
         row2 = tk.Frame(frame_click)
@@ -83,6 +86,20 @@ class App:
         for cps_val in ["5", "10", "20", "50"]:
             tk.Button(row2b, text=cps_val, width=4,
                       command=lambda v=cps_val: self.cps_var.set(v)).pack(side='left', padx=2)
+
+        # ── 锚定坐标 ──
+        row_anchor = tk.Frame(frame_click)
+        row_anchor.pack(fill='x', padx=8, pady=4)
+        tk.Label(row_anchor, text="坐标:").pack(side='left')
+        self.anchor_x_var = tk.StringVar(value="")
+        self.anchor_y_var = tk.StringVar(value="")
+        tk.Entry(row_anchor, textvariable=self.anchor_x_var, width=6, justify='center').pack(side='left', padx=(8, 2))
+        tk.Label(row_anchor, text="X").pack(side='left')
+        tk.Entry(row_anchor, textvariable=self.anchor_y_var, width=6, justify='center').pack(side='left', padx=(8, 2))
+        tk.Label(row_anchor, text="Y").pack(side='left')
+        tk.Button(row_anchor, text="拾取", width=4,
+                  command=self._pick_anchor).pack(side='left', padx=(8, 0))
+        tk.Label(row_anchor, text="(空=跟随)", font=("Microsoft YaHei UI", 8), fg="#888").pack(side='left', padx=4)
 
         # ── 连点控制 ──
         self.btn_click = tk.Button(
@@ -110,6 +127,15 @@ class App:
         self.replay_interval_var = tk.StringVar(value="0")
         tk.Entry(row_m1, textvariable=self.replay_interval_var, width=4, justify='center').pack(side='left', padx=(8, 2))
         tk.Label(row_m1, text="秒").pack(side='left')
+
+        # 回放速度
+        row_speed = tk.Frame(frame_macro)
+        row_speed.pack(fill='x', padx=8, pady=2)
+        tk.Label(row_speed, text="速度:").pack(side='left')
+        self.speed_var = tk.StringVar(value="1")
+        for speed_val in ["0.5", "1", "2", "4", "8"]:
+            tk.Radiobutton(row_speed, text=f"{speed_val}x", 
+                          variable=self.speed_var, value=speed_val).pack(side='left', padx=2)
 
         row3 = tk.Frame(frame_macro)
         row3.pack(fill='x', padx=8, pady=4)
@@ -176,13 +202,57 @@ class App:
 
         # 按键
         from pynput.mouse import Button
-        self.clicker.button = Button.left if self.btn_var.get() == "left" else Button.right
+        btn_map = {"left": Button.left, "right": Button.right, "middle": Button.middle}
+        self.clicker.button = btn_map.get(self.btn_var.get(), Button.left)
+        
+        # 双击设置
+        self.clicker.click_count = 2 if self.double_click_var.get() else 1
+
+        # 锚定坐标
+        try:
+            x_str = self.anchor_x_var.get().strip()
+            y_str = self.anchor_y_var.get().strip()
+            if x_str and y_str:
+                self.clicker.anchor_x = int(x_str)
+                self.clicker.anchor_y = int(y_str)
+            else:
+                self.clicker.anchor_x = None
+                self.clicker.anchor_y = None
+        except ValueError:
+            self.clicker.anchor_x = None
+            self.clicker.anchor_y = None
+            self.anchor_x_var.set("")
+            self.anchor_y_var.set("")
 
     def _toggle_click(self):
         """切换连点"""
         self._apply_settings()
         self.clicker.toggle()
         self._update_status()
+
+    def _pick_anchor(self):
+        """3秒后拾取鼠标坐标作为锚点"""
+        self._flash_status("3秒内点击鼠标左键拾取坐标...")
+        from pynput.mouse import Listener as MouseListener, Button
+
+        def _on_click(x, y, button, pressed):
+            if pressed and button == Button.left:
+                self.anchor_x_var.set(str(x))
+                self.anchor_y_var.set(str(y))
+                self.root.after(0, lambda: self._flash_status(f"已拾取: ({x}, {y})"))
+                return False  # 停止监听
+
+        def _start_pick():
+            listener = MouseListener(on_click=_on_click)
+            listener.start()
+            # 5秒超时自动停止
+            def _timeout():
+                if listener.running:
+                    listener.stop()
+                    self.root.after(0, lambda: self._flash_status("拾取超时"))
+            self.root.after(5000, _timeout)
+
+        self.root.after(100, _start_pick)
 
     def _toggle_record(self):
         """切换录制"""
@@ -217,13 +287,30 @@ class App:
         except ValueError:
             interval = 0.0
             self.replay_interval_var.set("0")
+        
+        # 读取速度倍率
+        try:
+            speed = float(self.speed_var.get())
+            if speed <= 0:
+                raise ValueError
+        except ValueError:
+            speed = 1.0
+            self.speed_var.set("1")
 
         def _on_done():
             self.root.after(0, self._update_status)
             self.root.after(0, lambda: self._flash_status("回放完成"))
+        
+        def _on_progress(current, remaining):
+            if remaining == -1:
+                text = f"回放中... 第{current}轮 (无限)"
+            else:
+                text = f"回放中... 第{current}轮 (剩余{remaining}次)"
+            self.root.after(0, lambda: self.macro_status.config(text=text))
 
         self._replay_count = count
-        self.macro.replay(count=count, interval=interval, callback=_on_done)
+        self.macro.replay(count=count, interval=interval, speed=speed,
+                         callback=_on_done, progress_callback=_on_progress)
         self._update_status()
 
     def _stop_all(self):
@@ -285,13 +372,24 @@ class App:
 
         # 宏状态
         n = self.macro.event_count
+        n_mouse = self.macro.mouse_event_count
+        n_move = self.macro.move_event_count
+        n_key = self.macro.key_event_count
+        detail_parts = []
+        if n_mouse > 0:
+            detail_parts.append(f"{n_mouse}鼠标")
+        if n_move > 0:
+            detail_parts.append(f"{n_move}移动")
+        if n_key > 0:
+            detail_parts.append(f"{n_key}键盘")
+        detail = f" ({' '.join(detail_parts)})" if n > 0 and detail_parts else ""
         if self.macro.is_recording:
             self.macro_status.config(text=f"状态: 录制中... ({n} 事件)", fg="#f44336")
         elif self.macro.is_playing:
             count_str = "无限" if getattr(self, '_replay_count', 1) == 0 else str(getattr(self, '_replay_count', 1))
             self.macro_status.config(text=f"状态: 回放中... ({count_str}轮)", fg="#2196F3")
         elif n > 0:
-            self.macro_status.config(text=f"状态: 已录制 {n} 个事件", fg="#4CAF50")
+            self.macro_status.config(text=f"状态: 已录制 {n} 个事件{detail}", fg="#4CAF50")
         else:
             self.macro_status.config(text="状态: 未录制", fg="#888")
 
