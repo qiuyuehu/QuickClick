@@ -4,3 +4,7 @@ dist/
 *.spec
 *.pyc
 *.pyo
+
+# 更新方案文档
+UPDATE_PLAN*.md
+PLAN*.md
