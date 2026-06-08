@@ -62,7 +62,7 @@ QuickClick/
 ├── gui.py               # GUI 界面 + 热键管理（412行）
 ├── start.bat            # Windows 一键启动脚本
 ├── QuickClick.spec       # PyInstaller 打包配置
-├── icon.ico             # 应用图标
+├── icon.ico             # 应用图标（v1.3.0 Pillow 生成，鼠标+闪电）
 ├── 鼠标连点器.png         # README 界面截图
 ├── UPDATE_PLAN.md       # v1.1 更新方案
 ├── UPDATE_PLAN_v1.2.md  # v1.2 更新方案
