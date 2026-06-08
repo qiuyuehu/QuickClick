@@ -13,6 +13,7 @@ Author: qiuyuehu / 凛 (Emperor Agent)
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import os
+import sys
 
 from PIL import Image, ImageDraw, ImageTk
 
@@ -225,6 +226,18 @@ class App:
         self.root.resizable(False, False)
         self.root.attributes('-topmost', True)
         self.root.configure(bg=BG)
+
+        # 设置图标
+        try:
+            if getattr(sys, 'frozen', False):
+                # 打包后：从临时目录读取
+                icon_path = os.path.join(sys._MEIPASS, 'icon.ico')
+            else:
+                # 开发时：从当前目录读取
+                icon_path = os.path.join(os.path.dirname(__file__), 'icon.ico')
+            self.root.iconbitmap(icon_path)
+        except Exception:
+            pass  # 图标加载失败不影响运行
 
         self._build_ui()
         self._start_hotkey_listener()
