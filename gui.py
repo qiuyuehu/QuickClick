@@ -604,6 +604,7 @@ class App:
         n_mouse = self.macro.mouse_event_count
         n_move = self.macro.move_event_count
         n_key = self.macro.key_event_count
+        n_scroll = self.macro.scroll_event_count
         detail_parts = []
         if n_mouse > 0:
             detail_parts.append(f"{n_mouse}鼠标")
@@ -611,6 +612,8 @@ class App:
             detail_parts.append(f"{n_move}移动")
         if n_key > 0:
             detail_parts.append(f"{n_key}键盘")
+        if n_scroll > 0:
+            detail_parts.append(f"{n_scroll}滚轮")
         detail = f" ({' '.join(detail_parts)})" if n > 0 and detail_parts else ""
         if self.macro.is_recording:
             self.macro_status.config(text=f"状态: 录制中... ({n} 事件)", fg=RED)

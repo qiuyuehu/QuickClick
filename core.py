@@ -153,6 +153,10 @@ class MacroRecorder:
     def key_event_count(self) -> int:
         return sum(1 for e in self.events if e.event_type in ('key_press', 'key_release'))
 
+    @property
+    def scroll_event_count(self) -> int:
+        return sum(1 for e in self.events if e.event_type == 'scroll')
+
     def start_recording(self):
         """开始录制"""
         if self._recording:
@@ -220,8 +224,21 @@ class MacroRecorder:
         ))
 
     def _on_scroll(self, x, y, dx, dy):
-        # 暂不支持滚轮
-        pass
+        """录制滚轮事件（只记录垂直滚动dy）"""
+        if not self._recording:
+            return
+        now = time.perf_counter()
+        delay = now - self._last_event_time
+        self._last_event_time = now
+        self.events.append(MacroEvent(
+            event_type='scroll',
+            x=x, y=y,
+            delay=delay,
+            # dy复用pressed字段存储滚动方向（True=正方向/向下，False=负方向/向上）
+            pressed=(dy > 0),
+            # dx复用key_name字段存储滚动量（取绝对值）
+            key_name=str(abs(dy)),
+        ))
 
     @staticmethod
     def _key_to_name(key) -> str:
@@ -324,11 +341,16 @@ class MacroRecorder:
                     if self._stop_event.is_set():
                         break
 
-                    if evt.event_type == 'click' and evt.pressed:
+                    if evt.event_type == 'click':
+                        # 修复长按：press/release分离，保持原始按住时长
                         self._mouse.position = (evt.x, evt.y)
+                        time.sleep(0.001)  # 坐标设置后微延时，等系统跟上
                         btn_map = {'left': Button.left, 'right': Button.right, 'middle': Button.middle}
                         btn = btn_map.get(evt.button, Button.left)
-                        self._mouse.click(btn)
+                        if evt.pressed:
+                            self._mouse.press(btn)
+                        else:
+                            self._mouse.release(btn)
                     elif evt.event_type == 'move':
                         self._mouse.position = (evt.x, evt.y)
                     elif evt.event_type == 'key_press':
@@ -344,6 +366,13 @@ class MacroRecorder:
                             self._keyboard.release(k)
                         except (KeyError, Exception):
                             pass
+                    elif evt.event_type == 'scroll':
+                        # 滚轮回放：position设置后微延时，再执行滚动
+                        self._mouse.position = (evt.x, evt.y)
+                        time.sleep(0.001)
+                        # dy=1向上滚（正方向），dy=-1向下滚（负方向）
+                        dy = int(evt.key_name) if evt.pressed else -int(evt.key_name)
+                        self._mouse.scroll(0, dy)
 
                 # 检查是否继续
                 if count > 0 and round_num >= count:
