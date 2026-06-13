@@ -20,6 +20,7 @@ from PIL import Image, ImageDraw, ImageTk
 from pynput.keyboard import Listener as KeyboardListener, Key
 
 from core import AutoClicker, MacroRecorder
+from config import Config
 
 # ── 热键映射 ──────────────────────────────────────────────
 HOTKEY_TOGGLE_CLICK = Key.f8
@@ -218,6 +219,7 @@ class App:
         self.clicker = AutoClicker()
         self.macro = MacroRecorder()
         self._hotkey_listener = None
+        self._config = Config.load()  # 加载配置
 
         # ── 主窗口 ──
         self.root = tk.Tk()
@@ -240,6 +242,7 @@ class App:
             pass  # 图标加载失败不影响运行
 
         self._build_ui()
+        self._apply_config_to_ui()  # 把配置填入界面
         self._start_hotkey_listener()
         self._update_status()
 
@@ -445,6 +448,49 @@ class App:
             self.anchor_x_var.set("")
             self.anchor_y_var.set("")
 
+        # 保存配置
+        self._save_config()
+
+    def _apply_config_to_ui(self):
+        """把已加载的配置填入界面"""
+        cfg = self._config
+        self.cps_var.set(str(cfg.cps))
+        self.btn_var.set(cfg.button)
+        self.double_click_var.set(cfg.double_click)
+        self.anchor_x_var.set(str(cfg.anchor_x) if cfg.anchor_x is not None else "")
+        self.anchor_y_var.set(str(cfg.anchor_y) if cfg.anchor_y is not None else "")
+        self.replay_count_var.set(str(cfg.replay_count))
+        self.replay_interval_var.set(str(cfg.replay_interval))
+        self.speed_var.set(cfg.speed)
+
+    def _save_config(self):
+        """从界面读取当前设置并保存"""
+        cfg = self._config
+        try:
+            cfg.cps = int(self.cps_var.get())
+        except ValueError:
+            cfg.cps = 10
+        cfg.button = self.btn_var.get()
+        cfg.double_click = self.double_click_var.get()
+        try:
+            x_str = self.anchor_x_var.get().strip()
+            y_str = self.anchor_y_var.get().strip()
+            cfg.anchor_x = int(x_str) if x_str else None
+            cfg.anchor_y = int(y_str) if y_str else None
+        except ValueError:
+            cfg.anchor_x = None
+            cfg.anchor_y = None
+        try:
+            cfg.replay_count = int(self.replay_count_var.get())
+        except ValueError:
+            cfg.replay_count = 1
+        try:
+            cfg.replay_interval = float(self.replay_interval_var.get())
+        except ValueError:
+            cfg.replay_interval = 0.0
+        cfg.speed = self.speed_var.get()
+        cfg.save()
+
     def _toggle_click(self):
         """切换连点"""
         self._apply_settings()
@@ -635,6 +681,7 @@ class App:
 
     def _on_close(self):
         """关闭时清理"""
+        self._save_config()  # 关闭前保存配置
         self._stop_all()
         if self._hotkey_listener:
             self._hotkey_listener.stop()

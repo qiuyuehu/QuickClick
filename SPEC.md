@@ -1,8 +1,8 @@
 # QuickClick 项目规格文档
 
-> 最后更新：2026-06-08 14:20
+> 最后更新：2026-06-08 18:30
 > 基于源码结构 + README + UPDATE_PLAN 梳理
-> 当前版本：v1.3.0
+> 当前版本：v1.4.0
 > GitHub：qiuyuehu/QuickClick
 
 ---
