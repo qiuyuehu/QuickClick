@@ -26,7 +26,6 @@ class Config:
     # 宏回放
     replay_count: int = 1
     replay_interval: float = 0.0
-    speed: str = "1"
 
     @classmethod
     def _config_path(cls) -> str:
